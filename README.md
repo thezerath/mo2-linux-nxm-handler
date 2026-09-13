@@ -6,7 +6,9 @@ Fixes the "Mod Manager Download" button on Nexus Mods when you run Mod Organizer
 
 You're a happy Linux gamer and you want to play some Skyrim. Modded, of course. So you set up a prefix, install the game, install MO2 inside it, and configure everything. Then you click "Mod Manager Download" on Nexus Mods and nothing happens. MO2 doesn't open, no download starts. Sad face :C
 
-MO2 lives inside a Wine prefix, a fake little Windows install, and it only ever told that fake Windows about `nxm://` links. Your real Linux desktop, the one your browser runs on, never got the memo. This tool tells it, and points each game's links at the right MO2 install.
+MO2 lives inside a Wine prefix, a fake little Windows install. When it claimed `nxm://` links for itself, that claim went no further than the prefix. Your real Linux desktop, the one your browser runs on, never got the memo.
+
+This tool delivers the memo, then points each game's links at the MO2 install that should handle them.
 
 ## What you need
 
@@ -37,7 +39,7 @@ If you don't, open the [latest release](https://github.com/thezerath/mo2-linux-n
 ./install.sh --dry-run
 ```
 
-This changes nothing. It looks through your Lutris games, finds any MO2 installs, and lists them with the Nexus game name it matched each one to. Read it and check your games are there.
+This changes nothing. It looks through your Lutris games, finds any MO2 installs, and lists each one with the Nexus game name it matched. Read the list and check your games are all there.
 
 **2. Install for real.**
 
@@ -51,7 +53,7 @@ The installer copies everything it needs into `~/.local/share/mo2-linux-nxm-hand
 
 That's it. Nexus download buttons should now open the right copy of MO2.
 
-If you use MO2 for several games, each in its own Wine prefix, there is nothing extra to do. Nexus puts the game name in the link and this tool reads it, so each click finds its own MO2 on its own.
+If you use MO2 for several games, each in its own Wine prefix, there is nothing extra to do. Nexus puts the game name in the link and this tool reads it, so every click finds its own MO2.
 
 To pick up a new game later, run the installed copy:
 
@@ -59,7 +61,7 @@ To pick up a new game later, run the installed copy:
 ~/.local/share/mo2-linux-nxm-handler/install.sh
 ```
 
-It's safe to run again and again. `--help` lists the options and `--version` prints the version, worth quoting in a bug report.
+It's safe to run again and again. `--help` lists the options. `--version` prints the version, which is worth quoting in a bug report.
 
 ## What it installs
 
@@ -92,7 +94,7 @@ Swap `fallout4` for one of your own games. The key in that link is fake, so MO2 
 <details>
 <summary><b>Why that setting is needed, and how to add it by hand</b></summary>
 
-Proton runs MO2 inside a sealed container. MO2 listens for "add this mod to downloads" on a channel that only carries inside that container, so a link can only be delivered from inside the same one.
+Proton runs MO2 inside a sealed container. MO2 listens for "add this mod to downloads" on a channel that carries only inside that container, so a link has to be delivered from inside that same container.
 
 UMU can step into a container that already exists rather than build a second one, but only if whoever built it left the door open. The handler leaves it open for any MO2 it starts itself. An MO2 you start from Lutris needs Lutris to do the same.
 
@@ -100,7 +102,7 @@ UMU can step into a container that already exists rather than build a second one
 
 With the setting on, MO2 takes about five seconds longer to start, because it looks for an existing container before building one. In return, clicking a download while MO2 is open puts the mod straight into the window you already have open.
 
-Plain Wine prefixes have no container, so none of this applies to them. Links reach a running MO2 on their own. The same goes for a handful of older or unusual Proton builds that run without a Steam runtime, Proton-Tkg among them: no container, nothing to step into, nothing to set. If you are unsure which kind you have, look for `require_tool_appid` in that Proton's `toolmanifest.vdf`. If it's there, the container applies and so does this section.
+Plain Wine prefixes have no container, so none of this applies to them. Links reach a running MO2 on their own. The same goes for a handful of older or unusual Proton builds that run without a Steam runtime, Proton-Tkg among them: no container, nothing to step into, nothing to set. If you're unsure which kind you have, look for `require_tool_appid` in that Proton's `toolmanifest.vdf`. If it's there, the container applies and so does this section.
 
 </details>
 
@@ -142,7 +144,7 @@ Then run `~/.local/share/mo2-linux-nxm-handler/install.sh` to pick up the change
 </details>
 
 <details>
-<summary><b>My game isn't recognised</b></summary>
+<summary><b>My game isn't recognized</b></summary>
 
 If `install.sh` finds your MO2 install but can't work out which Nexus game it belongs to, it says so at the end and points you at `games.local.map`. Create this file:
 
@@ -165,7 +167,7 @@ Then run `~/.local/share/mo2-linux-nxm-handler/install.sh` again. The file is ne
 
 Only one app can be the system default for `nxm://` links, so this tool gets the click first even for a game you handle with something else.
 
-When it sees a game it has no MO2 install for, it offers to hand the link straight to any other installed app that also knows how to open `nxm://` links, rather than making you pick an MO2 install that doesn't apply. Say yes to "always send this game's links there" and it remembers the choice in `~/.local/share/mo2-linux-nxm-handler/fallback-routes.conf`, and stops asking.
+When it sees a game it has no MO2 install for, it offers to hand the link straight to any other installed app that also knows how to open `nxm://` links, rather than making you pick an MO2 install that doesn't apply. Say yes to "always send this game's links there" and it records the choice in `~/.local/share/mo2-linux-nxm-handler/fallback-routes.conf` and stops asking.
 
 </details>
 
