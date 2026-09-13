@@ -1,0 +1,29 @@
+# Manual nxm:// routes for MO2 instances install.sh cannot auto-discover
+# (a bare Wine prefix, Bottles, a Lutris entry with an unusual layout, etc).
+#
+# One entry per line: nexus_domain|wine_binary|wine_prefix|nxmhandler_path
+#
+#   nexus_domain      the slug from the nxm:// link, e.g. nxm://fallout4/...
+#   wine_binary       absolute path to the wine/wine64 binary to run, or
+#                     umu:<PROTONPATH> to launch through Lutris's bundled
+#                     umu-run instead (for a game managed via Proton rather
+#                     than a classic runners/wine/<version> folder).
+#                     PROTONPATH takes two forms. A keyword picks whichever
+#                     build is newest: GE-Proton, UMU-Proton, GE-Latest,
+#                     UMU-Latest, umu-scout, umu-soldier, umu-sniper,
+#                     umu-steamrt4, umu-steamrt4-arm64. An absolute path
+#                     pins one specific Proton directory, the one holding
+#                     its "proton" script. Pin a path when you want a fixed
+#                     build, and pin the same one the game itself runs under.
+#   wine_prefix       absolute path to that install's WINEPREFIX
+#   nxmhandler_path   absolute path to nxmhandler.exe next to ModOrganizer.exe
+#
+# Examples:
+# fallout4|/home/me/.local/share/lutris/runners/wine/ge-proton/files/bin/wine64|/home/me/Games/fallout-4|/home/me/Games/fallout-4/drive_c/Modding/MO2/nxmhandler.exe
+# skyrimspecialedition|umu:GE-Proton|/home/me/Games/skyrim/pfx|/home/me/Games/skyrim/pfx/drive_c/Modding/MO2/nxmhandler.exe
+# starfield|umu:/home/me/.local/share/Steam/compatibilitytools.d/GE-Proton10-34|/home/me/Games/starfield|/home/me/Games/starfield/drive_c/Modding/MO2/nxmhandler.exe
+#
+# A line here overrides an auto-discovered route for the same domain.
+# Copy this file to ~/.local/share/mo2-linux-nxm-handler/manual-routes.conf (install.sh
+# does this once automatically) and edit the copy - this .example file is
+# never read directly and is safe to update from upstream.

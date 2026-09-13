@@ -1,0 +1,17 @@
+# MO2 ModOrganizer.ini "gameName" -> Nexus Mods URL domain slug.
+# One entry per line: gameName|nexus_domain
+# Match is case-insensitive on the gameName side.
+# Confirmed against a real ModOrganizer.ini: "Fallout 4" and "Skyrim Special Edition".
+# Anything missing: add it to games.local.map instead of editing this file.
+Skyrim|skyrim
+Skyrim Special Edition|skyrimspecialedition
+Skyrim VR|skyrimvr
+Enderal|enderal
+Enderal Special Edition|enderalspecialedition
+Fallout 3|fallout3
+Fallout New Vegas|newvegas
+Fallout 4|fallout4
+Fallout 4 VR|fallout4
+Oblivion|oblivion
+Morrowind|morrowind
+Starfield|starfield

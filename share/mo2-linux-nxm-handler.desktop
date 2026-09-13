@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Mod Organizer 2 (nxm handler)
+NoDisplay=true
+Exec=__NXM_ROUTER__ %u
+MimeType=x-scheme-handler/nxm;
+Terminal=false
+Categories=Game;
