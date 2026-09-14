@@ -7,12 +7,24 @@ ROUTES_FILE="$DATA_DIR/routes.conf"
 MANUAL_FILE="$DATA_DIR/manual-routes.conf"
 FALLBACK_FILE="$DATA_DIR/fallback-routes.conf"
 LOG_FILE="$DATA_DIR/router.log"
+LOG_MAX_LINES=500
 OUR_DESKTOP_NAME="mo2-linux-nxm-handler.desktop"
 UMU_RUN="${XDG_DATA_HOME:-$HOME/.local/share}/lutris/runtime/umu/umu-run"
 UMU_LOCAL="${XDG_DATA_HOME:-$HOME/.local/share}/umu"
 
 log() {
   mkdir -p "$DATA_DIR"
+
+  # Log rotation
+  if [[ -f "$LOG_FILE" ]]; then
+    local lines
+    lines=$(wc -l <"$LOG_FILE" 2>/dev/null) || lines=0
+    if (( lines >= LOG_MAX_LINES )); then
+      tail -n "$((LOG_MAX_LINES - 1))" "$LOG_FILE" >"$LOG_FILE.tmp" 2>/dev/null \
+        && mv "$LOG_FILE.tmp" "$LOG_FILE"
+    fi
+  fi
+
   printf '%s | %s\n' "$(date -Iseconds)" "${1//$'\n'/ }" >>"$LOG_FILE"
 }
 
