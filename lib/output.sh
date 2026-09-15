@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# SPDX-License-Identifier: CC-BY-NC-SA-4.0
+# SPDX-License-Identifier: GPL-3.0-only
 
 if [[ -t 1 && -z "${NO_COLOR:-}" && "${TERM:-dumb}" != dumb ]]; then
   c_bold=$'\033[1m'

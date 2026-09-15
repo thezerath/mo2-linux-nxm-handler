@@ -263,4 +263,4 @@ Delete that folder yourself if you want it fully gone.
 
 ## License
 
-Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International. Free to use and share, no commercial use allowed, and any fork or adaptation has to stay under this same license and stay free. See [LICENSE](LICENSE) for the full terms.
+GPL-3.0-only, copyright thezerath. Free to use, modify, and redistribute; any fork or derivative has to stay under this same license, with source available. No warranty. See [LICENSE](LICENSE) for the full terms.

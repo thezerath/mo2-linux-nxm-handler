@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SPDX-License-Identifier: CC-BY-NC-SA-4.0
+# SPDX-License-Identifier: GPL-3.0-only
 set -uo pipefail
 
 DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/mo2-linux-nxm-handler"
