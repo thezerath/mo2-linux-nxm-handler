@@ -14,11 +14,11 @@ This tool delivers the memo, then points each game's links at the MO2 install th
 
 | Need | What it's for | Notes |
 | --- | --- | --- |
-| MO2 working under Wine or Proton | the thing this fixes | usually set up through Lutris |
-| `xdg-utils` | registering `nxm://` with your desktop | almost every desktop ships it |
-| `zenity` | the popups, when a link needs a decision | almost always installed |
+| MO2, running under Wine or Proton | why we are all here | usually set up through Lutris |
+| `xdg-utils` | registering `nxm://` with your desktop | usually preinstalled, but not on Arch |
+| `zenity` | the popups, when a link needs a decision | usually already installed |
 | `gio` | handing a link to a different mod manager | ships with glib2, only needed for that case |
-| UMU 1.4.1 or newer | reaching an MO2 that is already open | Proton setups only, Lutris 0.5.20 and up bundle it |
+| UMU 1.4.1 or newer | reaching an MO2 that is already open | Proton setups only, Lutris 0.5.20+ bundles it |
 
 ## Getting it
 
@@ -39,7 +39,7 @@ If you don't, open the [latest release](https://github.com/thezerath/mo2-linux-n
 ./install.sh --dry-run
 ```
 
-This changes nothing. It looks through your Lutris games, finds any MO2 installs, and lists each one with the Nexus game name it matched. Read the list and check your games are all there.
+This changes nothing. It scans your Lutris library for MO2 installs and pairs them with Nexus Mods matches. Check if anything is missing or looks wrong.
 
 **2. Install for real.**
 
@@ -71,7 +71,7 @@ It's safe to run again and again. `--help` lists the options. `--version` prints
 | `~/.local/share/applications/mo2-linux-nxm-handler.desktop` | tells your desktop that something here opens `nxm://` links |
 | `~/.config/mimeapps.list` | one line naming that shortcut as the default for `nxm://` |
 
-All three sit inside your home directory. Nothing goes system-wide and nothing asks for your password. `uninstall.sh` reverses all three.
+All three sit inside your home directory. No sudo required. `uninstall.sh` reverses all three.
 
 ## Checking it worked
 
@@ -84,41 +84,41 @@ To test without a browser, run the handler yourself:
   'nxm://fallout4/mods/1/files/1?key=test&expires=9999999999'
 ```
 
-Swap `fallout4` for one of your own games. The key in that link is fake, so MO2 will complain that the download failed. That's fine: the part being tested is whether the right MO2 opens or comes forward at all.
+Swap `fallout4` for one of your own games. The key in that link is fake, so MO2 will complain that the download failed. That's fine, just checking if the right MO2 shows up.
 
 ## Setups that need extra steps
 
 > [!IMPORTANT]
-> If MO2 runs under Proton, a link can only reach an MO2 that is **already open** when Lutris starts that game with `UMU_CONTAINER_NSENTER` set to `1`. `install.sh` checks for this and offers to add it for you. Without it, close MO2 before clicking a download.
+> Running MO2 through Proton? A download link only reaches MO2 if it's **already open**, and only if Lutris starts that game with `UMU_CONTAINER_NSENTER` set to `1`. `install.sh` offers to set that for you. Otherwise, a link only works if MO2 is closed when you click it.
 
 <details>
 <summary><b>Why that setting is needed, and how to add it by hand</b></summary>
 
-Proton runs MO2 inside a sealed container. MO2 listens for "add this mod to downloads" on a channel that carries only inside that container, so a link has to be delivered from inside that same container.
+Proton runs MO2 in a sealed container. MO2 only listens for new downloads inside that container, so the link has to be delivered from inside it too.
 
-UMU can step into a container that already exists rather than build a second one, but only if whoever built it left the door open. The handler leaves it open for any MO2 it starts itself. An MO2 you start from Lutris needs Lutris to do the same.
+UMU can hop into an existing container instead of spinning up a new one, but only if the door's left open. This handler leaves it open for any MO2 it launches itself. If Lutris launches MO2 instead, Lutris needs that same setting.
 
-`install.sh` offers to make that change, keeping a `.bak` copy of any file it edits. Close Lutris first so it doesn't write the file back out from memory. To do it by hand: right click the game in Lutris, Configure, System options, Environment variables, add `UMU_CONTAINER_NSENTER` with the value `1`. Either way, restart MO2 afterward.
+**Close Lutris first, or it'll overwrite the change from memory.** Then run `install.sh` to set this for you (it backs up any file it touches). By hand: right click the game → Configure → System options → Environment variables → add `UMU_CONTAINER_NSENTER` with value `1`. Restart MO2 either way.
 
-With the setting on, MO2 takes about five seconds longer to start, because it looks for an existing container before building one. In return, clicking a download while MO2 is open puts the mod straight into the window you already have open.
+Adds about five seconds to MO2's startup while it checks for an existing container. Worth it: downloads now land straight in the MO2 window that's already open.
 
-Plain Wine prefixes have no container, so none of this applies to them. Links reach a running MO2 on their own. The same goes for a handful of older or unusual Proton builds that run without a Steam runtime, Proton-Tkg among them: no container, nothing to step into, nothing to set. If you're unsure which kind you have, look for `require_tool_appid` in that Proton's `toolmanifest.vdf`. If it's there, the container applies and so does this section.
+Plain Wine prefixes skip all this, no container means links reach MO2 directly. Same for a few Proton builds without a Steam runtime, like Proton-Tkg. Not sure which you've got? Check that Proton's `toolmanifest.vdf` for `require_tool_appid`. Found it? This section applies to you.
 
 </details>
 
 <details>
 <summary><b>Which Proton builds work</b></summary>
 
-Newer Lutris versions run a Proton game through a bundled tool called UMU instead of Lutris's own copy of Wine. The installer detects that and routes the link the same way Lutris launches the game, so those games need no extra setup.
+Newer Lutris runs Proton games through UMU instead of its own Wine. The installer detects this and routes links the same way Lutris launches the game, no extra setup needed.
 
-This is not limited to GE-Proton. Valve's own Proton builds, UMU-Proton, and community builds like Proton-EM or Proton-Tkg all work. Whether you leave the runner on "GE-Proton (Latest)" or pin one exact build, the installer resolves the same Proton the game itself runs under.
+Works with more than GE-Proton: Valve's own builds, UMU-Proton, Proton-EM, Proton-Tkg, all of it. Pin a specific build or leave it on "GE-Proton (Latest)", the installer matches whatever Proton the game actually runs.
 
 </details>
 
 <details>
 <summary><b>My MO2 isn't in Lutris</b></summary>
 
-If you run MO2 through a plain Wine prefix, Bottles, or anything else that isn't Lutris, `install.sh` won't find it on its own. Add it by hand.
+Running MO2 through a plain Wine prefix, Bottles, or anything that isn't Lutris? `install.sh` can't find it on its own, add it by hand.
 
 After your first install, open:
 
@@ -165,9 +165,9 @@ Then run `~/.local/share/mo2-linux-nxm-handler/install.sh` again. The file is ne
 <details>
 <summary><b>A game I manage with a different mod manager</b></summary>
 
-Only one app can be the system default for `nxm://` links, so this tool gets the click first even for a game you handle with something else.
+Only one app can own `nxm://` links system-wide, so this tool always gets the click first, even for games you manage elsewhere.
 
-When it sees a game it has no MO2 install for, it offers to hand the link straight to any other installed app that also knows how to open `nxm://` links, rather than making you pick an MO2 install that doesn't apply. Say yes to "always send this game's links there" and it records the choice in `~/.local/share/mo2-linux-nxm-handler/fallback-routes.conf` and stops asking.
+No MO2 install for that game? It offers to hand the link to any other app that opens `nxm://` links, instead of forcing you to pick an MO2 that doesn't fit. Say yes to "always send this game's links there" and it's saved to `fallback-routes.conf`, no more asking.
 
 </details>
 
@@ -235,9 +235,9 @@ Expected when that MO2 was started without the container setting, and the popup 
 
 The "Skipped instances" list gives a reason per game. The usual ones:
 
-- no `nxmhandler.exe` sitting next to `ModOrganizer.exe`, meaning the MO2 install is incomplete
-- no `ModOrganizer.ini` anywhere under the prefix, meaning MO2 has never actually been run for that game
-- the runner couldn't be resolved, meaning Lutris is pointing at a Wine or Proton build that isn't installed any more
+- no `nxmhandler.exe` next to `ModOrganizer.exe`, meaning the MO2 install is incomplete
+- no `ModOrganizer.ini` under the prefix, meaning MO2 has never been run for that game
+- the runner couldn't be resolved, meaning Lutris points at a Wine or Proton build that's no longer installed
 
 </details>
 <br>
@@ -249,9 +249,17 @@ If none of that fits, open an issue with the version line, the log lines from th
 ~/.local/share/mo2-linux-nxm-handler/uninstall.sh
 ```
 
-This removes the entry that told your browser how to open `nxm://` links, clears it as the default handler, and deletes the installed program files.
+This removes the `nxm://` browser entry, clears it as the default handler, and deletes the installed program files.
 
-Your settings and log are deliberately left behind, so reinstalling later picks up where you left off: `routes.conf`, `manual-routes.conf`, `fallback-routes.conf`, `games.local.map` and `router.log`, all in `~/.local/share/mo2-linux-nxm-handler/`. Delete that folder yourself if you want it fully gone.
+Your settings and log are deliberately left behind in `~/.local/share/mo2-linux-nxm-handler/`, so reinstalling later picks up where you left off:
+
+- `routes.conf`
+- `manual-routes.conf`
+- `fallback-routes.conf`
+- `games.local.map`
+- `router.log`
+
+Delete that folder yourself if you want it fully gone.
 
 ## License
 
