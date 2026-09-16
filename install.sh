@@ -8,6 +8,7 @@ DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/mo2-linux-nxm-handler"
 APPS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
 LUTRIS_GAMES_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/lutris/games"
 LUTRIS_RUNNERS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/lutris/runners/wine"
+LUTRIS_WINE_RUNNER_YML="${XDG_DATA_HOME:-$HOME/.local/share}/lutris/runners/wine.yml"
 LUTRIS_UMU_RUN="${XDG_DATA_HOME:-$HOME/.local/share}/lutris/runtime/umu/umu-run"
 NSENTER_KEY="UMU_CONTAINER_NSENTER"
 STEAM_DATA_DIRS=(
@@ -83,6 +84,17 @@ resolve_wine_binary() {
   elif [[ -x "$runner_dir/bin/wine64" ]]; then
     echo "$runner_dir/bin/wine64"
   fi
+}
+
+# Runner-level wine default
+runner_default_wine_version() {
+  local version=""
+  if [[ -f "$LUTRIS_WINE_RUNNER_YML" ]]; then
+    while IFS=$'\t' read -r key val; do
+      [[ "$key" == VERSION ]] && version="$val"
+    done < <(extract_yaml_fields "$LUTRIS_WINE_RUNNER_YML")
+  fi
+  printf '%s\n' "${version:-ge-proton}"
 }
 
 # Lutris 0.5.20+ routes these version names through its bundled umu-run
@@ -280,6 +292,7 @@ else
         VERSION) version="$val" ;;
       esac
     done < <(extract_yaml_fields "$yml")
+    [[ -n "$version" ]] || version="$(runner_default_wine_version)"
 
     [[ -n "$exe" ]] || continue
     shopt -s nocasematch
